@@ -12,12 +12,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.net.URL;
+import javax.swing.Timer;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -33,11 +31,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.ImageIcon;
-import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class WalletUI extends JFrame {
     private static final String AUTH_SCREEN = "auth";
@@ -69,10 +64,10 @@ public class WalletUI extends JFrame {
     private final JPanel screenRoot = new JPanel(screenCards);
     private final CardLayout dashboardCards = new CardLayout();
     private final JPanel dashboardContent = new JPanel(dashboardCards);
-    private final Timer uiAnimationTimer;
+    private final Timer introAnimationTimer;
+    private int introFrame;
 
     private User currentUser;
-    private int animationTick;
 
     private JTextField loginUsernameField;
     private JPasswordField loginPasswordField;
@@ -80,7 +75,6 @@ public class WalletUI extends JFrame {
     private JPasswordField registerPasswordField;
 
     private JLabel statusLabel;
-    private JLabel statusDot;
     private JLabel userWelcomeLabel;
     private JLabel userBalanceLabel;
     private JLabel overviewBalanceValue;
@@ -106,7 +100,6 @@ public class WalletUI extends JFrame {
         setMinimumSize(new Dimension(1220, 780));
         setSize(1360, 860);
         setLocationRelativeTo(null);
-        setIconImage(createAppIcon());
 
         screenRoot.setOpaque(false);
         dashboardContent.setOpaque(false);
@@ -124,11 +117,11 @@ public class WalletUI extends JFrame {
         setContentPane(shell);
         screenCards.show(screenRoot, AUTH_SCREEN);
 
-        uiAnimationTimer = new Timer(220, e -> {
-            animationTick++;
+        introAnimationTimer = new Timer(140, e -> {
+            introFrame = (introFrame + 1) % 40;
             repaint();
         });
-        uiAnimationTimer.start();
+        introAnimationTimer.start();
     }
 
     private JPanel buildAuthScreen() {
@@ -147,19 +140,17 @@ public class WalletUI extends JFrame {
 
         JLabel title = pixelLabel("WALLET", 34, TEXT);
         JLabel subtitle = htmlLabel(
-                "<html><div style='width:320px;'>Fast wallet access with a clean desktop experience.</div></html>",
+                "<html><div style='width:320px;'>Fast wallet access with a playful pixel-style frontend.</div></html>",
                 15,
-                MUTED);
-        JPanel gifPanel = createIntroGifPanel();
+            MUTED
+        );
 
         hero.add(Box.createVerticalStrut(12));
         hero.add(title);
         hero.add(Box.createVerticalStrut(14));
         hero.add(subtitle);
-        hero.add(Box.createVerticalStrut(18));
-        hero.add(gifPanel);
-        hero.add(Box.createVerticalStrut(18));
-        hero.add(createFeatureChip("SECURE WALLET ACCESS", CYAN));
+        hero.add(Box.createVerticalStrut(24));
+        hero.add(createFeatureChip("ATM CASHOUT ANIMATION", CYAN));
         hero.add(Box.createVerticalStrut(12));
         hero.add(createFeatureChip("LOGIN AND REGISTER", GREEN));
         hero.add(Box.createVerticalStrut(12));
@@ -175,10 +166,10 @@ public class WalletUI extends JFrame {
 
         JPanel top = transparentPanel();
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
-        top.add(pixelLabel("ACCOUNT ACCESS", 24, TEXT));
+        top.add(pixelLabel("INSERT COIN TO ENTER", 24, TEXT));
         top.add(Box.createVerticalStrut(8));
         top.add(htmlLabel(
-                "<html><div style='width:500px;'>Sign in to your wallet or register a new account. The application keeps the original wallet logic with a clearer desktop interface.</div></html>",
+                "<html><div style='width:500px;'>Sign in to your wallet or register a new player profile. The original wallet logic is still running underneath this themed frontend.</div></html>",
                 14,
                 MUTED));
 
@@ -206,9 +197,8 @@ public class WalletUI extends JFrame {
         card.add(createLabeledField("PASSWORD", loginPasswordField));
         card.add(Box.createVerticalStrut(18));
 
-        JButton loginButton = createButton("LOGIN", CYAN, PANEL_DEEP);
+        JButton loginButton = createButton("START GAME", CYAN, PANEL_DEEP);
         loginButton.addActionListener(e -> handleLogin());
-        bindSubmitAction(loginButton, loginUsernameField, loginPasswordField);
         card.add(loginButton);
         card.add(Box.createVerticalStrut(12));
         card.add(htmlLabel("<html>Admin route: <b>admin/admin</b></html>", 13, MUTED));
@@ -232,7 +222,6 @@ public class WalletUI extends JFrame {
 
         JButton registerButton = createButton("CREATE PROFILE", PINK, PANEL_DEEP);
         registerButton.addActionListener(e -> handleRegister());
-        bindSubmitAction(registerButton, registerUsernameField, registerPasswordField);
         card.add(registerButton);
         card.add(Box.createVerticalStrut(12));
         card.add(htmlLabel("Fresh accounts begin at 0.00 taka.", 13, MUTED));
@@ -254,9 +243,9 @@ public class WalletUI extends JFrame {
         JPanel left = transparentPanel();
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
 
-        userWelcomeLabel = pixelLabel("WELCOME", 28, TEXT);
+        userWelcomeLabel = pixelLabel(wrapText("WELCOME, PLAYER", 320), 28, TEXT);
         JLabel subtitle = htmlLabel(
-                "<html><div style='width:520px;'>Manage deposits, withdrawals, transfers, and account activity from one dashboard.</div></html>",
+                "<html><div style='width:520px;'>Move through your wallet like a retro control room: check your stash, power up your balance, and keep the transaction log glowing.</div></html>",
                 14,
                 MUTED);
 
@@ -266,7 +255,7 @@ public class WalletUI extends JFrame {
 
         JPanel right = transparentPanel(new GridLayout(1, 2, 14, 14));
         userBalanceLabel = pixelLabel("0.00 taka", 22, GOLD);
-        right.add(createMetricTile("BALANCE", userBalanceLabel, GOLD));
+        right.add(createMetricTile("COIN BALANCE", userBalanceLabel, GOLD));
         right.add(createMetricTile("SYSTEM", pixelLabel("ONLINE", 18, GREEN), GREEN));
 
         header.add(left, BorderLayout.CENTER);
@@ -288,7 +277,7 @@ public class WalletUI extends JFrame {
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBorder(new EmptyBorder(20, 18, 20, 18));
 
-        sidebar.add(pixelLabel("NAVIGATION", 20, TEXT));
+        sidebar.add(pixelLabel("MAP SELECT", 20, TEXT));
         sidebar.add(Box.createVerticalStrut(18));
         sidebar.add(createNavButton("OVERVIEW", DASH_OVERVIEW, CYAN));
         sidebar.add(Box.createVerticalStrut(12));
@@ -327,18 +316,18 @@ public class WalletUI extends JFrame {
 
         JPanel top = transparentPanel();
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
-        top.add(pixelLabel("ACCOUNT OVERVIEW", 24, CYAN));
+        top.add(pixelLabel("CONTROL ROOM", 24, CYAN));
         top.add(Box.createVerticalStrut(8));
         top.add(htmlLabel(
-                "<html><div style='width:520px;'>This screen tracks your current wallet status. Use the menu to deposit, withdraw, or transfer funds without leaving the dashboard.</div></html>",
+                "<html><div style='width:520px;'>This screen tracks your current wallet state with a retro-console mood. Use the left-side menu to deposit, withdraw, or transfer without leaving the dashboard.</div></html>",
                 14,
                 MUTED));
 
         JPanel stats = transparentPanel(new GridLayout(1, 3, 14, 14));
-        overviewUserValue = pixelLabel("--", 18, PINK);
+        overviewUserValue = pixelLabel(wrapText("--", 220), 18, PINK);
         overviewBalanceValue = pixelLabel("0.00 taka", 18, GOLD);
         overviewTransactionsValue = pixelLabel("0", 18, GREEN);
-        stats.add(createMetricTile("ACCOUNT", overviewUserValue, PINK));
+        stats.add(createMetricTile("PLAYER", overviewUserValue, PINK));
         stats.add(createMetricTile("BALANCE", overviewBalanceValue, GOLD));
         stats.add(createMetricTile("LOG ENTRIES", overviewTransactionsValue, GREEN));
 
@@ -346,12 +335,12 @@ public class WalletUI extends JFrame {
         panel.add(stats, BorderLayout.CENTER);
         panel.add(createInfoPanel(
                 "SYSTEM NOTES",
-                "Welcome to Wallet.\n\n"
+                "Welcome to the Wallet control room.\n\n"
                         + "Deposit uses bank account validation.\n"
                         + "Withdrawal checks valid booth numbers.\n"
                         + "Transfer updates both wallets.\n"
                         + "History stays saved in local text files.\n\n"
-                        + "Use this dashboard to manage account activity more easily."),
+                        + "This version leans into a retro pixel-night theme inspired by classic arcade and platformer desk scenes."),
                 BorderLayout.SOUTH);
         return panel;
     }
@@ -367,9 +356,9 @@ public class WalletUI extends JFrame {
 
         JPanel form = transparentPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-        form.add(pixelLabel("DEPOSIT FUNDS", 24, GREEN));
+        form.add(pixelLabel("POWER-UP DEPOSIT", 24, GREEN));
         form.add(Box.createVerticalStrut(8));
-        form.add(htmlLabel("Add money to the wallet after a valid bank account check.", 14, MUTED));
+        form.add(htmlLabel("Load coins into the wallet after a valid bank check.", 14, MUTED));
         form.add(Box.createVerticalStrut(18));
         form.add(createLabeledField("AMOUNT", depositAmountField));
         form.add(Box.createVerticalStrut(12));
@@ -377,9 +366,7 @@ public class WalletUI extends JFrame {
         form.add(Box.createVerticalStrut(12));
         form.add(createLabeledField("BANK ID PIN", depositPinField));
         form.add(Box.createVerticalStrut(18));
-        JButton depositButton = createButton("DEPOSIT NOW", GREEN, PANEL_DEEP, e -> handleDeposit());
-        bindSubmitAction(depositButton, depositAmountField, depositBankField, depositPinField);
-        form.add(depositButton);
+        form.add(createButton("DEPOSIT NOW", GREEN, PANEL_DEEP, e -> handleDeposit()));
 
         panel.add(form, BorderLayout.CENTER);
         panel.add(createRulePanel(
@@ -403,17 +390,15 @@ public class WalletUI extends JFrame {
 
         JPanel form = transparentPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-        form.add(pixelLabel("WITHDRAW FUNDS", 24, GOLD));
+        form.add(pixelLabel("BOOTH EXIT", 24, GOLD));
         form.add(Box.createVerticalStrut(8));
-        form.add(htmlLabel("Use a valid booth number and withdraw funds securely.", 14, MUTED));
+        form.add(htmlLabel("Use a valid booth number and withdraw arcade-style cash.", 14, MUTED));
         form.add(Box.createVerticalStrut(18));
         form.add(createLabeledField("WALLET BOOTH NUMBER", withdrawBoothField));
         form.add(Box.createVerticalStrut(12));
         form.add(createLabeledField("AMOUNT", withdrawAmountField));
         form.add(Box.createVerticalStrut(18));
-        JButton withdrawButton = createButton("WITHDRAW", GOLD, PANEL_DEEP, e -> handleWithdraw());
-        bindSubmitAction(withdrawButton, withdrawBoothField, withdrawAmountField);
-        form.add(withdrawButton);
+        form.add(createButton("WITHDRAW", GOLD, PANEL_DEEP, e -> handleWithdraw()));
         form.add(Box.createVerticalStrut(12));
         form.add(htmlLabel("Only amounts divisible by 100 are allowed.", 13, MUTED));
 
@@ -439,17 +424,15 @@ public class WalletUI extends JFrame {
 
         JPanel form = transparentPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-        form.add(pixelLabel("TRANSFER FUNDS", 24, PINK));
+        form.add(pixelLabel("WARP PIPE TRANSFER", 24, PINK));
         form.add(Box.createVerticalStrut(8));
-        form.add(htmlLabel("Send funds to another registered account.", 14, MUTED));
+        form.add(htmlLabel("Send funds to another registered player profile.", 14, MUTED));
         form.add(Box.createVerticalStrut(18));
         form.add(createLabeledField("RECIPIENT USERNAME", transferRecipientField));
         form.add(Box.createVerticalStrut(12));
         form.add(createLabeledField("AMOUNT", transferAmountField));
         form.add(Box.createVerticalStrut(18));
-        JButton transferButton = createButton("SEND", PINK, PANEL_DEEP, e -> handleTransfer());
-        bindSubmitAction(transferButton, transferRecipientField, transferAmountField);
-        form.add(transferButton);
+        form.add(createButton("SEND COINS", PINK, PANEL_DEEP, e -> handleTransfer()));
 
         panel.add(form, BorderLayout.CENTER);
         panel.add(createRulePanel(
@@ -498,10 +481,10 @@ public class WalletUI extends JFrame {
 
         JPanel left = transparentPanel();
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
-        left.add(pixelLabel("ADMIN OVERVIEW", 28, TEXT));
+        left.add(pixelLabel("ADMIN OVERWORLD", 28, TEXT));
         left.add(Box.createVerticalStrut(8));
         left.add(
-                htmlLabel("Browse every registered user and current balance from the admin dashboard.", 14, MUTED));
+                htmlLabel("Browse every registered user and current balance from the retro admin console.", 14, MUTED));
 
         JPanel buttons = transparentPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         buttons.add(createButton("REFRESH", CYAN, PANEL_DEEP, e -> refreshAdminData()));
@@ -527,22 +510,13 @@ public class WalletUI extends JFrame {
 
     private JPanel buildStatusBar() {
         PixelCardPanel bar = new PixelCardPanel(PANEL, OUTLINE, false);
-        bar.setLayout(new BorderLayout(10, 0));
+        bar.setLayout(new BorderLayout());
         bar.setBorder(new EmptyBorder(10, 14, 10, 14));
-
-        statusDot = new JLabel("■");
-        statusDot.setFont(pixelFont(12));
-        statusDot.setForeground(CYAN);
 
         statusLabel = new JLabel("Welcome to Wallet.");
         statusLabel.setFont(pixelFont(13));
         statusLabel.setForeground(TEXT);
-
-        JPanel left = transparentPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        left.add(statusDot);
-        left.add(Box.createHorizontalStrut(10));
-        left.add(statusLabel);
-        bar.add(left, BorderLayout.WEST);
+        bar.add(statusLabel, BorderLayout.WEST);
         return bar;
     }
 
@@ -568,18 +542,6 @@ public class WalletUI extends JFrame {
                 new EmptyBorder(8, 10, 8, 10)));
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         return label;
-    }
-
-    private JPanel createIntroGifPanel() {
-        IntroGifPanel panel;
-        try {
-            URL gifUrl = new URL("https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExejA4dWJmdjN2dDRwZXlmd2J1OWR3ZWhjMDEybXdoNWg4YXJxNjB6bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/S5uMJDmtnATLbjjw3h/giphy.gif");
-            panel = new IntroGifPanel(new ImageIcon(gifUrl), null);
-        } catch (Exception e) {
-            panel = new IntroGifPanel(null, "GIF COULD NOT BE LOADED");
-        }
-        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        return panel;
     }
 
     private JPanel createMiniInfoTile(String title, String value) {
@@ -662,15 +624,7 @@ public class WalletUI extends JFrame {
         scroll.getViewport().setBackground(PANEL_DEEP);
         scroll.setPreferredSize(new Dimension(290, 170));
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        styleScrollPane(scroll);
         return scroll;
-    }
-
-    private void styleScrollPane(JScrollPane scroll) {
-        scroll.getVerticalScrollBar().setUnitIncrement(18);
-        scroll.getVerticalScrollBar().setUI(new PixelScrollBarUI());
-        scroll.getVerticalScrollBar().setPreferredSize(new Dimension(14, 0));
     }
 
     private JPanel createRulePanel(String title, String[] rules) {
@@ -730,32 +684,12 @@ public class WalletUI extends JFrame {
         return label;
     }
 
-    private Font pixelFont(int size) {
-        return new Font("Monospaced", Font.BOLD, size);
+    private String wrapText(String text, int width) {
+        return "<html><div style='width:" + width + "px; word-break: break-all;'>" + text + "</div></html>";
     }
 
-    private Image createAppIcon() {
-        BufferedImage image = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = image.createGraphics();
-        g2.setColor(new Color(8, 16, 42));
-        g2.fillRect(0, 0, 64, 64);
-
-        g2.setColor(CYAN);
-        g2.fillRect(6, 6, 52, 52);
-        g2.setColor(PANEL_DEEP);
-        g2.fillRect(10, 10, 44, 44);
-
-        g2.setColor(GOLD);
-        g2.fillRect(16, 18, 10, 28);
-        g2.fillRect(26, 18, 6, 8);
-        g2.fillRect(26, 30, 8, 8);
-        g2.fillRect(34, 18, 12, 28);
-
-        g2.setColor(PINK);
-        g2.fillRect(18, 48, 10, 4);
-        g2.fillRect(36, 48, 10, 4);
-        g2.dispose();
-        return image;
+    private Font pixelFont(int size) {
+        return new Font("Monospaced", Font.BOLD, size);
     }
 
     private JPanel transparentPanel() {
@@ -770,22 +704,14 @@ public class WalletUI extends JFrame {
         return panel;
     }
 
-    private void bindSubmitAction(JButton button, JTextField... fields) {
-        for (JTextField field : fields) {
-            field.addActionListener(e -> button.doClick());
-        }
-    }
-
     private void handleRegister() {
         WalletResult result = service.register(registerUsernameField.getText(),
                 new String(registerPasswordField.getPassword()));
-        setStatus(result.getMessage(), result.isSuccess() ? GREEN : RED);
+        setStatus(result.getMessage());
         showFeedback(result);
         if (result.isSuccess()) {
             registerUsernameField.setText("");
             registerPasswordField.setText("");
-            loginUsernameField.setText(result.getUser().getUsername());
-            loginPasswordField.requestFocusInWindow();
         }
     }
 
@@ -795,7 +721,7 @@ public class WalletUI extends JFrame {
         WalletResult result = service.login(username, password);
 
         if (!result.isSuccess()) {
-            setStatus(result.getMessage(), RED);
+            setStatus(result.getMessage());
             showFeedback(result);
             return;
         }
@@ -803,8 +729,7 @@ public class WalletUI extends JFrame {
         if (service.isAdminCredentials(username, password)) {
             refreshAdminData();
             screenCards.show(screenRoot, ADMIN_SCREEN);
-            setTitle("Wallet - Admin");
-            setStatus("Admin dashboard opened.", CYAN);
+            setStatus("Admin dashboard opened.");
             return;
         }
 
@@ -812,8 +737,7 @@ public class WalletUI extends JFrame {
         refreshUserData();
         dashboardCards.show(dashboardContent, DASH_OVERVIEW);
         screenCards.show(screenRoot, USER_SCREEN);
-        setTitle("Wallet - " + currentUser.getUsername());
-        setStatus("Welcome back, " + currentUser.getUsername() + ".", GREEN);
+        setStatus("Welcome back, " + currentUser.getUsername() + ".");
     }
 
     private void handleDeposit() {
@@ -855,7 +779,7 @@ public class WalletUI extends JFrame {
     }
 
     private void afterWalletAction(WalletResult result) {
-        setStatus(result.getMessage(), result.isSuccess() ? GREEN : RED);
+        setStatus(result.getMessage());
         showFeedback(result);
         if (result.isSuccess()) {
             refreshUserData();
@@ -870,7 +794,8 @@ public class WalletUI extends JFrame {
         String balance = service.getFormattedBalance(currentUser);
         userWelcomeLabel.setText("WELCOME, " + currentUser.getUsername().toUpperCase());
         userBalanceLabel.setText(balance);
-        overviewUserValue.setText(currentUser.getUsername().toUpperCase());
+        userWelcomeLabel.setText(wrapText("WELCOME, " + currentUser.getUsername().toUpperCase(), 320));
+        overviewUserValue.setText(wrapText(currentUser.getUsername().toUpperCase(), 220));
         overviewBalanceValue.setText(balance);
         overviewTransactionsValue.setText(service.getFormattedTransactionCount(currentUser));
 
@@ -905,20 +830,12 @@ public class WalletUI extends JFrame {
     private void logout() {
         currentUser = null;
         loginPasswordField.setText("");
-        setTitle("Wallet");
         screenCards.show(screenRoot, AUTH_SCREEN);
-        setStatus("Logged out successfully.", CYAN);
+        setStatus("Logged out successfully.");
     }
 
     private void setStatus(String message) {
-        setStatus(message, CYAN);
-    }
-
-    private void setStatus(String message, Color accent) {
         statusLabel.setText(message);
-        if (statusDot != null) {
-            statusDot.setForeground(accent);
-        }
     }
 
     private void showFeedback(WalletResult result) {
@@ -975,51 +892,6 @@ public class WalletUI extends JFrame {
         @Override
         public void setForeground(Color fg) {
             super.setForeground(fg);
-        }
-    }
-
-    private class PixelScrollBarUI extends BasicScrollBarUI {
-        @Override
-        protected void configureScrollBarColors() {
-            thumbColor = CYAN;
-            trackColor = PANEL_DEEP;
-        }
-
-        @Override
-        protected JButton createDecreaseButton(int orientation) {
-            return createZeroButton();
-        }
-
-        @Override
-        protected JButton createIncreaseButton(int orientation) {
-            return createZeroButton();
-        }
-
-        private JButton createZeroButton() {
-            JButton button = new JButton();
-            button.setPreferredSize(new Dimension(0, 0));
-            button.setMinimumSize(new Dimension(0, 0));
-            button.setMaximumSize(new Dimension(0, 0));
-            return button;
-        }
-
-        @Override
-        protected void paintTrack(Graphics g, javax.swing.JComponent c, java.awt.Rectangle trackBounds) {
-            g.setColor(PANEL_DEEP);
-            g.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
-        }
-
-        @Override
-        protected void paintThumb(Graphics g, javax.swing.JComponent c, java.awt.Rectangle thumbBounds) {
-            if (thumbBounds.isEmpty() || !scrollbar.isEnabled()) {
-                return;
-            }
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setColor(CYAN);
-            g2.fillRect(thumbBounds.x + 2, thumbBounds.y, thumbBounds.width - 4, thumbBounds.height);
-            g2.setColor(TEXT);
-            g2.fillRect(thumbBounds.x + 4, thumbBounds.y + 4, thumbBounds.width - 8, 2);
-            g2.dispose();
         }
     }
 
@@ -1084,11 +956,12 @@ public class WalletUI extends JFrame {
             paintMushroom(g2, 70, getHeight() - 76);
             paintMushroom(g2, 132, getHeight() - 76);
             paintCoin(g2, getWidth() - 82, 46);
+            paintAtmScene(g2, getWidth() - 220, getHeight() - 250, introFrame);
             g2.dispose();
         }
     }
 
-    private class PixelScenePanel extends JPanel {
+    private static class PixelScenePanel extends JPanel {
         PixelScenePanel() {
             setOpaque(false);
         }
@@ -1113,12 +986,8 @@ public class WalletUI extends JFrame {
             for (int i = 0; i < 55; i++) {
                 int x = (i * 137) % Math.max(1, getWidth() - 20);
                 int y = 30 + ((i * 79) % Math.max(1, getHeight() / 2));
-                boolean blinkOn = ((animationTick + i) % 6) < 3;
-                Color starColor = i % 3 == 0 ? PINK : (i % 3 == 1 ? CYAN : MUTED);
-                g2.setColor(blinkOn
-                        ? starColor
-                        : new Color(starColor.getRed(), starColor.getGreen(), starColor.getBlue(), 70));
-                g2.fillRect(x, y, blinkOn ? 4 : 2, blinkOn ? 4 : 2);
+                g2.setColor(i % 3 == 0 ? PINK : (i % 3 == 1 ? CYAN : MUTED));
+                g2.fillRect(x, y, 3, 3);
             }
 
             g2.setColor(new Color(39, 73, 148));
@@ -1145,79 +1014,9 @@ public class WalletUI extends JFrame {
             paintMushroom(g2, getWidth() - 126, getHeight() - 106);
             paintDesk(g2, getWidth() / 2 - 220, getHeight() - 170, 470);
             paintMonitor(g2, getWidth() / 2 - 120, getHeight() - 248, 220, 120);
-            paintNeonGlow(g2, 26, 18, 180, 6, ((animationTick % 4) < 2) ? PINK : CYAN);
-            paintNeonGlow(g2, getWidth() - 250, 70, 140, 6, ((animationTick % 5) < 3) ? CYAN : PINK);
 
             g2.dispose();
             super.paintComponent(g);
-        }
-    }
-
-    private class IntroGifPanel extends JPanel {
-        private final ImageIcon gifIcon;
-        private final String fallbackText;
-
-        IntroGifPanel(ImageIcon gifIcon, String fallbackText) {
-            this.gifIcon = gifIcon;
-            this.fallbackText = fallbackText;
-            setOpaque(false);
-            setPreferredSize(new Dimension(340, 230));
-            setMinimumSize(new Dimension(340, 230));
-            setMaximumSize(new Dimension(340, 230));
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setColor(new Color(5, 10, 30, 210));
-            g2.fillRect(6, 6, getWidth() - 6, getHeight() - 6);
-
-            g2.setColor(CYAN);
-            g2.fillRect(0, 0, getWidth() - 8, getHeight() - 8);
-            g2.setColor(PANEL_DEEP);
-            g2.fillRect(4, 4, getWidth() - 16, getHeight() - 16);
-            g2.setColor(OUTLINE);
-            g2.drawRect(1, 1, getWidth() - 11, getHeight() - 11);
-            g2.drawRect(6, 6, getWidth() - 21, getHeight() - 21);
-
-            int innerX = 16;
-            int innerY = 16;
-            int innerW = getWidth() - 36;
-            int innerH = getHeight() - 36;
-
-            g2.setColor(new Color(255, 255, 255, 18));
-            for (int y = innerY + 4; y < innerY + innerH; y += 10) {
-                g2.fillRect(innerX + 4, y, innerW - 8, 2);
-            }
-
-            if (gifIcon != null && gifIcon.getIconWidth() > 0 && gifIcon.getIconHeight() > 0) {
-                int sourceW = gifIcon.getIconWidth();
-                int sourceH = gifIcon.getIconHeight();
-                double scale = Math.min((double) innerW / sourceW, (double) innerH / sourceH);
-                int drawW = Math.max(1, (int) Math.round(sourceW * scale));
-                int drawH = Math.max(1, (int) Math.round(sourceH * scale));
-                int drawX = innerX + (innerW - drawW) / 2;
-                int drawY = innerY + (innerH - drawH) / 2;
-
-                g2.drawImage(gifIcon.getImage(), drawX, drawY, drawW, drawH, this);
-            } else {
-                g2.setColor(MUTED);
-                g2.setFont(pixelFont(14));
-                g2.drawString(fallbackText, innerX + 20, innerY + innerH / 2);
-            }
-
-            g2.setColor(GOLD);
-            g2.fillRect(18, 18, 18, 18);
-            g2.fillRect(getWidth() - 42, getHeight() - 42, 18, 18);
-            g2.dispose();
-            super.paintComponent(g);
-        }
-
-        @Override
-        public boolean imageUpdate(java.awt.Image img, int infoflags, int x, int y, int width, int height) {
-            boolean result = super.imageUpdate(img, infoflags, x, y, width, height);
-            repaint();
-            return result;
         }
     }
 
@@ -1298,13 +1097,46 @@ public class WalletUI extends JFrame {
         g2.fillRect(x + 42, y + 60, 12, 18);
     }
 
-    private void paintNeonGlow(Graphics2D g2, int x, int y, int width, int height, Color color) {
-        g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 55));
-        g2.fillRect(x - 6, y - 4, width + 12, height + 8);
-        g2.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 120));
-        g2.fillRect(x - 2, y - 2, width + 4, height + 4);
-        g2.setColor(color);
-        g2.fillRect(x, y, width, height);
+    private static void paintAtmScene(Graphics2D g2, int x, int y, int frame) {
+        g2.setColor(new Color(10, 18, 46));
+        g2.fillRect(x - 18, y + 118, 170, 12);
+
+        g2.setColor(new Color(67, 126, 214));
+        g2.fillRect(x + 70, y, 74, 110);
+        g2.setColor(new Color(128, 188, 255));
+        g2.fillRect(x + 78, y + 8, 58, 34);
+        g2.setColor(new Color(18, 43, 88));
+        g2.fillRect(x + 84, y + 50, 46, 8);
+        g2.fillRect(x + 84, y + 66, 46, 8);
+        g2.fillRect(x + 90, y + 86, 34, 6);
+        g2.setColor(new Color(255, 203, 74));
+        g2.fillRect(x + 110, y + 92, 18, 6);
+
+        int walkCycle = frame % 20;
+        int moneyPhase = frame >= 20 ? 1 : 0;
+        int armOffset = walkCycle < 10 ? 0 : 2;
+        int legOffset = walkCycle < 10 ? 0 : 2;
+
+        g2.setColor(new Color(173, 94, 52));
+        g2.fillRect(x + 10, y + 28, 12, 12);
+        g2.setColor(RED);
+        g2.fillRect(x + 6, y + 18, 20, 8);
+        g2.fillRect(x + 4, y + 40, 24, 14);
+        g2.setColor(new Color(30, 83, 188));
+        g2.fillRect(x + 8, y + 54, 20, 20);
+        g2.setColor(new Color(255, 214, 178));
+        g2.fillRect(x + 24, y + 42 + armOffset, 8, 8);
+        g2.fillRect(x + 2, y + 42 + (2 - armOffset), 8, 8);
+        g2.setColor(new Color(96, 58, 27));
+        g2.fillRect(x + 8, y + 74, 8, 18 + legOffset);
+        g2.fillRect(x + 20, y + 74, 8, 18 + (2 - legOffset));
+
+        if (moneyPhase == 1) {
+            g2.setColor(GREEN);
+            g2.fillRect(x + 34, y + 42, 16, 8);
+            g2.setColor(new Color(205, 255, 205));
+            g2.fillRect(x + 38, y + 44, 8, 2);
+        }
     }
 
     private static void paintPixelCloud(Graphics2D g2, int x, int y, Color color) {
