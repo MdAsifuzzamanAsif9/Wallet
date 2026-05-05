@@ -1,0 +1,21 @@
+# Build output
+/build/
+/dist/
+
+# NetBeans
+/nbproject/private/
+/nbproject/cache/
+/nbproject/private.properties
+/nbproject/private.xml
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+*.log
