@@ -16,6 +16,18 @@ A Java desktop wallet simulator with an enhanced Swing frontend for account mana
 
 ---
 
+## App Screenshots
+
+<p align="center">
+  <img src="assets/Login.png" width="800" alt="Login Screen">
+</p>
+<p align="center">
+  <img src="assets/User.png" width="800" alt="User Dashboard">
+</p>
+
+---
+
+
 ## Why this project is interesting
 
 `Wallet` is a small but complete wallet workflow simulator built as a Java desktop application. It now includes an enhanced Swing-based frontend while still keeping the original file-based wallet logic underneath. Instead of focusing on heavy frameworks or databases, it concentrates on the fundamentals:
