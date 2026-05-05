@@ -1,0 +1,17 @@
+Asif,Deposited: 12450.0 taka, New Balance: 477145.0 taka
+Asif,Withdrew: 7000.0 taka, New Balance: 470145.0 taka
+Asif,Transferred: 9000.0 taka to Jeetu
+Asif,Transferred: 1300.0 taka to Zihan
+Asif,Transferred: 6000.0 taka to Siam
+Asif,Deposited: 15000.0 taka, New Balance: 468845.0 taka
+Asif,Deposited: 1500.0 taka, New Balance: 470345.0 taka
+Asif,Withdrew: 15000.0 taka, New Balance: 455345.0 taka
+Asif,Transferred: 5000.0 taka to Jeetu
+Jeetu,Received: 9000.0 taka from Asif
+Jeetu,Received: 5000.0 taka from Asif
+Jeetu,Transferred: 3500.0 taka to Rashed
+Jeetu,Transferred: 3650.0 taka to Tamim
+Siam,Received: 6000.0 taka from Asif
+Zihan,Received: 1300.0 taka from Asif
+Rashed,Received: 3500.0 taka from Jeetu
+Tamim,Received: 3650.0 taka from Jeetu
