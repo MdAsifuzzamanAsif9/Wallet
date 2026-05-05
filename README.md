@@ -16,19 +16,27 @@ A Java desktop wallet simulator with an enhanced Swing frontend for account mana
 
 ---
 
-## App Screenshots
+## 🎨 User Interface Preview
 
+Experience a unique retro-styled desktop interface designed with Java Swing. The application features a high-contrast, cyberpunk-inspired aesthetic that makes digital banking feel like a classic arcade experience.
+
+### 🔐 Secure Access
 <p align="center">
   <img src="assets/Login.png" width="800" alt="Login Screen">
+  <br>
+  <em>The authentication hub provides a dual-panel layout for seamless login and registration, complete with retro pixel art and clear input fields.</em>
 </p>
+
+### 📊 Personal Dashboard
 <p align="center">
   <img src="assets/User.png" width="800" alt="User Dashboard">
+  <br>
+  <em>The main dashboard offers a centralized view of your account status, featuring balance summary cards, a real-time activity log, and a side-navigation menu for quick access to core features.</em>
 </p>
 
 ---
 
-
-## Why this project is interesting
+## 🚀 Why this project is interesting
 
 `Wallet` is a small but complete wallet workflow simulator built as a Java desktop application. It now includes an enhanced Swing-based frontend while still keeping the original file-based wallet logic underneath. Instead of focusing on heavy frameworks or databases, it concentrates on the fundamentals:
 
@@ -44,23 +52,23 @@ It works well as an academic project, a beginner Java portfolio piece, or a base
 
 ---
 
-## What the project does
+## 💳 What the project does
 
 The application simulates a lightweight digital wallet system where users can create accounts, sign in, move money, and inspect their balance history through a cleaner desktop dashboard.
 
-### Main user actions
+### 👤 Main user actions
 
-- Register a new wallet account
-- Log in with username and password
-- Use a modern desktop dashboard after login
-- Deposit money after validating bank account details
-- Withdraw money using a valid wallet booth number
-- Transfer money to another registered user
-- Check current balance
-- View transaction history
-- Log out safely with data written back to storage
+- **Register** a new wallet account
+- **Log in** with username and password
+- Use a **modern desktop dashboard** after login
+- **Deposit** money after validating bank account details
+- **Withdraw** money using a valid wallet booth number
+- **Transfer** money to another registered user
+- Check **current balance**
+- View **transaction history**
+- **Log out** safely with data written back to storage
 
-### Admin view
+### 🛡️ Admin view
 
 The current implementation includes a simple built-in admin shortcut:
 
@@ -71,23 +79,20 @@ That admin login displays all registered users and their current wallet balances
 
 ---
 
-## Feature Highlights
+## ✨ Feature Highlights
 
-- Enhanced Java Swing frontend with dedicated auth and dashboard screens
-- Balance summary cards and a cleaner desktop workflow
-- Separate action panels for deposit, withdrawal, and transfer
-- Activity feed panel for transaction history
-- File-based user persistence through `account.txt`
-- Separate transaction history persistence through `transactions.txt`
-- Deposit validation through bank account number and PIN matching
-- Withdrawal validation through wallet booth verification
-- Transfer support between registered users
-- Account abstraction through an `Account` base class
-- Clear class separation for app flow, storage, users, bank validation, and booth validation
+- **Enhanced UI**: Java Swing frontend with dedicated auth and dashboard screens.
+- **Visual Insights**: Balance summary cards and a cleaner desktop workflow.
+- **Action Panels**: Separate panels for deposit, withdrawal, and transfer.
+- **Activity Feed**: Real-time panel for tracking transaction history.
+- **File Persistence**: Local storage via `account.txt` and `transactions.txt`.
+- **Strict Validation**: Security checks for bank IDs, PINs, and booth numbers.
+- **Internal Transfers**: Instant support between registered users.
+- **OOP Architecture**: Modular class design using abstraction and inheritance.
 
 ---
 
-## How the wallet flow works
+## 🔄 How the wallet flow works
 
 ### Registration flow
 
@@ -174,17 +179,17 @@ This makes the project easy to understand, extend, and present as a learning-foc
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- `Java`
-- `Java Swing`
-- `Apache Ant`
-- `NetBeans project structure`
-- `Plain text file persistence`
+- **Language**: `Java`
+- **UI Framework**: `Java Swing`
+- **Build System**: `Apache Ant`
+- **IDE Support**: `NetBeans project structure`
+- **Storage**: `Plain text file persistence`
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
 ```text
 .
@@ -229,21 +234,21 @@ This design keeps the project simple and easy to run without requiring a databas
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
-### Requirements
+### 📋 Requirements
 
 - JDK `8` or later
 - Apache Ant
 
-### Run with Ant
+### 🏃 Run with Ant
 
 ```bash
 ant clean
 ant run
 ```
 
-### Compile and run manually
+### 💻 Compile and run manually
 
 ```bash
 javac -d build/classes src/wallettrial_2/*.java
