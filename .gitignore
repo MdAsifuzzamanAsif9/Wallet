@@ -1,6 +1,7 @@
 # Build output
 /build/
 /dist/
+/outclasses/
 
 # NetBeans
 /nbproject/private/

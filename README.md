@@ -2,11 +2,11 @@
 
 <div align="center">
 
-A Java console-based digital wallet simulator focused on account management, money movement, file persistence, and object-oriented design.
+A Java desktop wallet simulator with an enhanced Swing frontend for account management, money movement, file persistence, and object-oriented design.
 
 <p>
   <img alt="Language" src="https://img.shields.io/badge/language-Java-orange?style=for-the-badge">
-  <img alt="Interface" src="https://img.shields.io/badge/interface-console-blue?style=for-the-badge">
+  <img alt="Interface" src="https://img.shields.io/badge/interface-Java%20Swing-blue?style=for-the-badge">
   <img alt="Build" src="https://img.shields.io/badge/build-Ant-2563eb?style=for-the-badge">
   <img alt="Storage" src="https://img.shields.io/badge/storage-text%20files-16a34a?style=for-the-badge">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge">
@@ -18,7 +18,7 @@ A Java console-based digital wallet simulator focused on account management, mon
 
 ## Why this project is interesting
 
-`Wallet` is a small but complete wallet workflow simulator built as a menu-driven Java application. Instead of focusing on UI frameworks or databases, it concentrates on the fundamentals:
+`Wallet` is a small but complete wallet workflow simulator built as a Java desktop application. It now includes an enhanced Swing-based frontend while still keeping the original file-based wallet logic underneath. Instead of focusing on heavy frameworks or databases, it concentrates on the fundamentals:
 
 - user registration and authentication
 - balance management
@@ -26,6 +26,7 @@ A Java console-based digital wallet simulator focused on account management, mon
 - transaction history tracking
 - persistent storage through local files
 - modular class design using Java OOP concepts
+- desktop UI design with Java Swing
 
 It works well as an academic project, a beginner Java portfolio piece, or a base for future upgrades such as database integration, security hardening, or GUI development.
 
@@ -33,12 +34,13 @@ It works well as an academic project, a beginner Java portfolio piece, or a base
 
 ## What the project does
 
-The application simulates a lightweight digital wallet system where users can create accounts, sign in, move money, and inspect their balance history through a console menu.
+The application simulates a lightweight digital wallet system where users can create accounts, sign in, move money, and inspect their balance history through a cleaner desktop dashboard.
 
 ### Main user actions
 
 - Register a new wallet account
 - Log in with username and password
+- Use a modern desktop dashboard after login
 - Deposit money after validating bank account details
 - Withdraw money using a valid wallet booth number
 - Transfer money to another registered user
@@ -59,7 +61,10 @@ That admin login displays all registered users and their current wallet balances
 
 ## Feature Highlights
 
-- Menu-driven console interface for easy interaction
+- Enhanced Java Swing frontend with dedicated auth and dashboard screens
+- Balance summary cards and a cleaner desktop workflow
+- Separate action panels for deposit, withdrawal, and transfer
+- Activity feed panel for transaction history
 - File-based user persistence through `account.txt`
 - Separate transaction history persistence through `transactions.txt`
 - Deposit validation through bank account number and PIN matching
@@ -87,7 +92,7 @@ When a user logs in:
 
 1. The app reads previously saved users from local files
 2. It validates the provided username and password
-3. If matched, the user enters the wallet menu
+3. If matched, the user enters the wallet dashboard
 4. If not matched, the login is rejected
 
 ### Deposit flow
@@ -125,7 +130,10 @@ To transfer money:
 
 | Component | Responsibility |
 |---|---|
-| `App.java` | Main application entry point, menu handling, login, register, and wallet operations |
+| `App.java` | Main desktop application entry point |
+| `WalletUI.java` | Swing frontend with login, registration, dashboard, and admin screens |
+| `WalletService.java` | Reusable wallet business logic shared by the UI |
+| `WalletResult.java` | Lightweight result model for UI-friendly action responses |
 | `Account.java` | Abstract base account model with balance and transaction behavior |
 | `SaveAccount.java` | Concrete account implementation connected to a user |
 | `User.java` | Stores username, password, and account reference |
@@ -139,14 +147,16 @@ To transfer money:
 
 ## System design at a glance
 
-The project follows a straightforward console application architecture:
+The project now follows a straightforward desktop application architecture:
 
-1. `App.java` manages the user interaction loop.
-2. `FileUtil.java` loads saved users and transaction history at startup.
-3. Each `User` owns a `SaveAccount`, which inherits from `Account`.
-4. `Account` centralizes balance updates and transaction logging.
-5. `BankUtil` and `BoothUtil` validate external identifiers from text files.
-6. Before exit or logout, updated user and transaction data are written back to disk.
+1. `App.java` launches the Swing application.
+2. `WalletUI.java` manages the desktop frontend and screen transitions.
+3. `WalletService.java` handles registration, login, deposit, withdrawal, and transfer rules.
+4. `FileUtil.java` loads saved users and transaction history at startup.
+5. Each `User` owns a `SaveAccount`, which inherits from `Account`.
+6. `Account` centralizes balance updates and transaction logging.
+7. `BankUtil` and `BoothUtil` validate external identifiers from text files.
+8. After wallet actions, updated user and transaction data are written back to disk.
 
 This makes the project easy to understand, extend, and present as a learning-focused Java system.
 
@@ -155,6 +165,7 @@ This makes the project easy to understand, extend, and present as a learning-foc
 ## Tech Stack
 
 - `Java`
+- `Java Swing`
 - `Apache Ant`
 - `NetBeans project structure`
 - `Plain text file persistence`
@@ -168,6 +179,9 @@ This makes the project easy to understand, extend, and present as a learning-foc
 |-- src/
 |   `-- wallettrial_2/
 |       |-- App.java
+|       |-- WalletUI.java
+|       |-- WalletService.java
+|       |-- WalletResult.java
 |       |-- Account.java
 |       |-- SaveAccount.java
 |       |-- User.java
@@ -235,7 +249,8 @@ java -cp build/classes wallettrial_2.App
 - encapsulation
 - file input and output
 - collections with `List`
-- menu-driven control flow
+- GUI event handling with Swing
+- layered separation between UI and wallet logic
 
 ### Practical wallet concepts
 
@@ -257,7 +272,7 @@ This project is functional, but it is still intentionally simple in several impo
 - the admin credentials are hardcoded
 - data is stored in text files instead of a database
 - there is no automated testing or CI setup yet
-- the app is console-only and not built for production use
+- the app uses local Swing UI and is not built for production use
 
 These limitations are normal for a learning-oriented project and also create clear opportunities for future improvement.
 
@@ -270,7 +285,7 @@ These limitations are normal for a learning-oriented project and also create cle
 - add stronger validation and exception-safe input handling
 - support account deletion and password updates
 - add transaction timestamps
-- create a Swing, JavaFX, or web-based UI
+- add richer charts, icons, and visual reporting to the current UI
 - add unit tests for account and file utility behavior
 - add role-based admin features and better reporting
 
