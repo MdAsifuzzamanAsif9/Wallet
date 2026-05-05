@@ -12,7 +12,12 @@ Jeetu,Received: 5000.0 taka from Asif
 Jeetu,Transferred: 3500.0 taka to Rashed
 Jeetu,Transferred: 3650.0 taka to Tamim
 Siam,Received: 6000.0 taka from Asif
+Zubo,Received: 400.0 taka from MdAsifuzzamanAsif9
 Zihan,Received: 1300.0 taka from Asif
 Rashed,Received: 3500.0 taka from Jeetu
 Tamim,Received: 3650.0 taka from Jeetu
 MdAsifuzzamanAsif9,Deposited: 3000.0 taka, New Balance: 3000.0 taka
+MdAsifuzzamanAsif9,Received: 300.0 taka from Dewan Mim
+MdAsifuzzamanAsif9,Transferred: 400.0 taka to Zubo
+Dewan Mim,Deposited: 50000.0 taka, New Balance: 50000.0 taka
+Dewan Mim,Transferred: 300.0 taka to MdAsifuzzamanAsif9

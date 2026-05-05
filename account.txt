@@ -3,11 +3,12 @@ Jeetu,12,13690.0
 Siam,1234,35500.0
 Mushi,1,90.0
 Asha,11,891.0
-Zubo,121,790.0
+Zubo,121,1190.0
 Nabil,12,19935.0
 Silpi,123,35305.0
 Zihan,1234,56900.0
 Rashed,1324,3500.0
 Jamal,4321,6000.0
 Tamim,100,3650.0
-MdAsifuzzamanAsif9,asdasd,3000.0
+MdAsifuzzamanAsif9,asdasd,2900.0
+Dewan Mim,asif,49700.0
